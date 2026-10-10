@@ -18,7 +18,6 @@
 <body>
 <div class="sparkles" id="sparkles" aria-hidden="true"></div>
 
-<!-- 1. Navigation Bar sa Pinakataas -->
 <header class="top">
   <div class="top-in">
     <a class="brand" href="#top" aria-label="Mariane's 18th birthday, back to top">
@@ -85,9 +84,10 @@
   <h2>Gallery</h2>
   <p>A collection of cherished memories and debut portraits of Mariane Angeline.</p>
   <div class="debut-gal">
-    <button type="button" data-i="5"><img src="images/1.png" alt="Debut Portrait 1" loading="lazy" decoding="async"><span>Portrait I</span></button>
-    <button type="button" data-i="6"><img src="images/3.png" alt="Debut Portrait 2" loading="lazy" decoding="async"><span>Portrait II</span></button>
-    <button type="button" data-i="7"><img src="images/4.png" alt="Debut Portrait 3" loading="lazy" decoding="async"><span>Portrait III</span></button>
+    <button type="button" data-i="5"><img src="gallery/IMG_0148.JPG" alt="Debut Portrait 1" loading="lazy" decoding="async"><span>Portrait I</span></button>
+    <button type="button" data-i="6"><img src="gallery/IMG_0143.JPG" alt="Debut Portrait 2" loading="lazy" decoding="async"><span>Portrait II</span></button>
+    <button type="button" data-i="7"><img src="gallery/PSX_20261003_184210.JPG" alt="Debut Portrait 3" loading="lazy" decoding="async"><span>Portrait III</span></button>
+    <button type="button" data-i="8"><img src="gallery/IMG_0121.JPG" alt="Debut Portrait 4" loading="lazy" decoding="async"><span>Portrait IV</span></button>
   </div>
 </section>
 
@@ -134,7 +134,7 @@
     <details><summary>Is the celebration outdoors?</summary><p>[Update: indoor / outdoor / both]</p></details>
     <details><summary>What is the dress code?</summary><p>Semi-formal to formal, in our purple and emerald palette.</p></details>
     <details><summary>Is transportation provided?</summary><p>No shuttle is provided, but ample parking is available at the venue.</p></details>
-    <details><summary>Can I bring a plus-one?</summary><p>[Update: per your invitation]</p></details>
+    <details><summary>Can I bring a plus-one?</summary><p>Thanks for understanding! To keep the celebration intimate and within our venue capacity, invitations are for the named guests only.</p></details>
     <details><summary>When is the RSVP deadline?</summary><p>[RSVP deadline]</p></details>
     <details><summary>Will I have fun?</summary><p>Duh! &#128521;</p></details>
   </div>
@@ -163,7 +163,6 @@
 </div>
 
 <script>
-/* ---- Lightbox ---- */
 var lb=document.getElementById('lb'),lbImg=lb.querySelector('img'),cap=lb.querySelector('figcaption'),
     items=[].slice.call(document.querySelectorAll('.gal button, .debut-gal button')),cur=0,opener=null;
 function show(i){cur=(i+items.length)%items.length;var im=items[cur].querySelector('img');
