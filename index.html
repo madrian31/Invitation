@@ -16,6 +16,30 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- Interactive Envelope Overlay -->
+<div id="envelope-overlay" class="envelope-overlay">
+  <div class="envelope-wrapper" id="envelope-btn" role="button" tabindex="0" aria-label="Open invitation">
+    <div class="envelope-header-text">
+      <p class="env-eyebrow">✦ An Enchanted Evening ✦</p>
+      <h2>Mariane Angeline</h2>
+      <p class="env-sub">18th Birthday Celebration</p>
+    </div>
+
+    <div class="envelope">
+      <div class="letter">
+        <p class="env-eyebrow">✦ Welcome ✦</p>
+        <h3>You're Invited</h3>
+        <p class="env-sub">November 28, 2026 · 4:00 PM</p>
+      </div>
+      <div class="flap"></div>
+      <div class="pocket"></div>
+      <div class="seal">✦</div>
+    </div>
+    <p class="tap-hint">Tap to Open Invitation</p>
+  </div>
+</div>
+
 <div class="sparkles" id="sparkles" aria-hidden="true"></div>
 
 <header class="top">
@@ -163,6 +187,29 @@
 </div>
 
 <script>
+/* ---- Envelope Open Functionality ---- */
+var envBtn = document.getElementById('envelope-btn');
+var envOverlay = document.getElementById('envelope-overlay');
+
+if (envBtn && envOverlay) {
+  document.body.classList.add('lock');
+
+  function openEnvelope() {
+    if (envBtn.classList.contains('open')) return;
+    envBtn.classList.add('open');
+    setTimeout(function () {
+      envOverlay.classList.add('hidden');
+      document.body.classList.remove('lock');
+    }, 1800);
+  }
+
+  envBtn.addEventListener('click', openEnvelope);
+  envBtn.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); }
+  });
+}
+
+/* ---- Lightbox ---- */
 var lb=document.getElementById('lb'),lbImg=lb.querySelector('img'),cap=lb.querySelector('figcaption'),
     items=[].slice.call(document.querySelectorAll('.gal button, .debut-gal button')),cur=0,opener=null;
 function show(i){cur=(i+items.length)%items.length;var im=items[cur].querySelector('img');
