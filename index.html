@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -196,6 +196,16 @@
 
 <footer>Mariane Angeline Bernales &middot; 18th Birthday &middot; 11.28.2026</footer>
 
+<!-- Background Music: hidden YouTube player (video id is set in the script) -->
+<div class="yt" aria-hidden="true"><div id="yt"></div></div>
+<button type="button" class="music" id="music" aria-label="Play music" aria-pressed="false" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
+    <path class="w" d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path class="m" d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
+
 <!-- Lightbox Modal -->
 <div id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
 <button type="button" class="nav x" aria-label="Close">&times;</button>
@@ -215,6 +225,7 @@ if (envBtn && envOverlay) {
   function openEnvelope() {
     if (envBtn.classList.contains('open')) return;
     envBtn.classList.add('open');
+    playMusic(); // must start inside the tap, or phones block the audio
     setTimeout(function () {
       envOverlay.classList.add('hidden');
       document.body.classList.remove('lock');
@@ -226,6 +237,31 @@ if (envBtn && envOverlay) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); }
   });
 }
+
+/* ---- Background music (YouTube) ----
+   If YouTube is blocked or the phone refuses to play, nothing plays and the button stays hidden. */
+var YT_ID='pPzWnoomPXk',mBtn=document.getElementById('music'),yt=null,ytReady=false,wantPlay=false,playing=false,wasOn=false;
+function setMusic(on){playing=on;mBtn.classList.toggle('on',on);mBtn.setAttribute('aria-pressed',on);
+  mBtn.setAttribute('aria-label',on?'Pause music':'Play music')}
+function playMusic(){if(ytReady)yt.playVideo();else wantPlay=true}
+function pauseMusic(){if(ytReady)yt.pauseVideo();wantPlay=false}
+window.onYouTubeIframeAPIReady=function(){
+  yt=new YT.Player('yt',{width:1,height:1,videoId:YT_ID,
+    playerVars:{controls:0,loop:1,playlist:YT_ID,playsinline:1,disablekb:1,fs:0,rel:0},
+    events:{
+      onReady:function(){ytReady=true;yt.setVolume(70);if(wantPlay)yt.playVideo()},
+      onStateChange:function(e){
+        if(e.data===YT.PlayerState.PLAYING){mBtn.hidden=false;setMusic(true)}
+        else if(e.data===YT.PlayerState.PAUSED)setMusic(false)
+        else if(e.data===YT.PlayerState.ENDED){yt.seekTo(0);yt.playVideo()}},
+      onError:function(){ytReady=false;mBtn.hidden=true}}})};
+/* load the player while the guest is still on the envelope, so it is ready by the tap */
+addEventListener('load',function(){var s=document.createElement('script');
+  s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)});
+mBtn.onclick=function(){playing?pauseMusic():playMusic()};
+/* pause when the guest switches apps/tabs, resume when they come back */
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){wasOn=playing;if(playing)pauseMusic()}else if(wasOn)playMusic()});
 
 /* ---- Lightbox ---- */
 var lb=document.getElementById('lb'),lbImg=lb.querySelector('img'),cap=lb.querySelector('figcaption'),
