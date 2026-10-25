@@ -61,7 +61,7 @@
 <div class="hero" id="top">
   <p class="eyebrow">&#10022; An Enchanted Evening &#10022;</p>
   <h1>Celebrate Mariane Angeline's 18th</h1>
-  <img src="images/1.png" alt="Happy 18th Birthday Mariane Angeline Bernales" fetchpriority="high">
+  <img src="images/web/1.jpg" width="1200" height="1500" alt="Happy 18th Birthday Mariane Angeline Bernales" fetchpriority="high">
   <div class="actions"><a class="btn" href="#rsvp">RSVP Now</a></div>
 </div>
 
@@ -96,11 +96,11 @@
   <h2>The Court of Honor</h2>
   <p>The special people who will be part of this milestone night. <strong>Tap a card</strong> to view the full list, then swipe for the next one.</p>
   <div class="gal">
-    <button type="button" data-i="0"><img src="images/3.png" alt="18 Roses" loading="lazy" decoding="async"><span>18 Roses</span></button>
-    <button type="button" data-i="1"><img src="images/4.png" alt="18 Bills" loading="lazy" decoding="async"><span>18 Bills</span></button>
-    <button type="button" data-i="2"><img src="images/5.png" alt="18 Gifts" loading="lazy" decoding="async"><span>18 Gifts</span></button>
-    <button type="button" data-i="3"><img src="images/6.png" alt="18 Candles" loading="lazy" decoding="async"><span>18 Candles</span></button>
-    <button type="button" data-i="4"><img src="images/7.png" alt="18 Shots" loading="lazy" decoding="async"><span>18 Shots</span></button>
+    <button type="button" data-i="0"><img src="images/web/3.jpg" width="1200" height="1500" alt="18 Roses" loading="lazy" decoding="async"><span>18 Roses</span></button>
+    <button type="button" data-i="1"><img src="images/web/4.jpg" width="1200" height="1500" alt="18 Bills" loading="lazy" decoding="async"><span>18 Bills</span></button>
+    <button type="button" data-i="2"><img src="images/web/5.jpg" width="1200" height="1500" alt="18 Gifts" loading="lazy" decoding="async"><span>18 Gifts</span></button>
+    <button type="button" data-i="3"><img src="images/web/6.jpg" width="1200" height="1500" alt="18 Candles" loading="lazy" decoding="async"><span>18 Candles</span></button>
+    <button type="button" data-i="4"><img src="images/web/7.jpg" width="1200" height="1500" alt="18 Shots" loading="lazy" decoding="async"><span>18 Shots</span></button>
   </div>
 </section>
 
@@ -110,10 +110,10 @@
   <h2>Gallery</h2>
   <p>A collection of cherished memories and debut portraits of Mariane Angeline.</p>
   <div class="debut-gal">
-    <button type="button" data-i="5"><img src="gallery/dp1.jpg" alt="Debut Portrait 1" loading="lazy" decoding="async"><span>Portrait I</span></button>
-<button type="button" data-i="6"><img src="gallery/dp2.jpg" alt="Debut Portrait 2" loading="lazy" decoding="async"><span>Portrait II</span></button>
-<button type="button" data-i="7"><img src="gallery/dp3.jpg" alt="Debut Portrait 3" loading="lazy" decoding="async"><span>Portrait III</span></button>
-<button type="button" data-i="8"><img src="gallery/dp4.jpg" alt="Debut Portrait 4" loading="lazy" decoding="async"><span>Portrait IV</span></button>
+    <button type="button" data-i="5"><img src="gallery/web/dp1.jpg" width="1067" height="1600" alt="Debut Portrait 1" loading="lazy" decoding="async"><span>Portrait I</span></button>
+<button type="button" data-i="6"><img src="gallery/web/dp2.jpg" width="1067" height="1600" alt="Debut Portrait 2" loading="lazy" decoding="async"><span>Portrait II</span></button>
+<button type="button" data-i="7"><img src="gallery/web/dp3.jpg" width="1067" height="1600" alt="Debut Portrait 3" loading="lazy" decoding="async"><span>Portrait III</span></button>
+<button type="button" data-i="8"><img src="gallery/web/dp4.jpg" width="1600" height="1067" alt="Debut Portrait 4" loading="lazy" decoding="async"><span>Portrait IV</span></button>
   </div>
 </section>
 
@@ -230,12 +230,14 @@ lb.addEventListener('touchstart',function(e){sx=e.changedTouches[0].clientX},{pa
 lb.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)show(cur+(dx<0?1:-1))});
 
 /* ---- Countdown ---- */
-var t=new Date('2026-11-28T16:00:00+08:00'),cd=document.getElementById('cd');
+var t=new Date('2026-11-28T16:00:00+08:00'),cd=document.getElementById('cd'),cdB=null;
 function p2(n){return n<10?'0'+n:''+n}
 function tick(){var d=t-new Date();
-  if(d<=0){cd.innerHTML=(d>-864e5)?'<p class="done">Today is the magical day! &#127881;</p>':'<p class="done">Thank you for celebrating with us! &#128156;</p>';return}
+  if(d<=0){cd.innerHTML=(d>-864e5)?'<p class="done">Today is the magical day! &#127881;</p>':'<p class="done">Thank you for celebrating with us! &#128156;</p>';cdB=null;return}
   var v=[['Days',Math.floor(d/864e5)],['Hours',Math.floor(d/36e5)%24],['Min',Math.floor(d/6e4)%60],['Sec',Math.floor(d/1e3)%60]];
-  cd.innerHTML=v.map(function(x){return '<div><b>'+p2(x[1])+'</b><span>'+x[0]+'</span></div>'}).join('')}
+  /* build the boxes once, then only update the numbers each second */
+  if(!cdB){cd.innerHTML=v.map(function(x){return '<div><b></b><span>'+x[0]+'</span></div>'}).join('');cdB=cd.querySelectorAll('b')}
+  v.forEach(function(x,i){cdB[i].textContent=p2(x[1])})}
 tick();setInterval(tick,1000);
 
 /* ---- Add to calendar (.ics) ---- */
@@ -256,7 +258,7 @@ function spy(){top_.classList.toggle('scrolled',scrollY>40);var cur='';
     if(el&&el.getBoundingClientRect().top<innerHeight*.4)cur=id});
   links.forEach(function(a){var on=a.getAttribute('href')==='#'+cur;
     a.classList.toggle('on',on);on?a.setAttribute('aria-current','true'):a.removeAttribute('aria-current')})}
-addEventListener('scroll',spy,{passive:true});spy();
+var spyQ=0;addEventListener('scroll',function(){if(!spyQ)spyQ=requestAnimationFrame(function(){spyQ=0;spy()})},{passive:true});spy();
 
 /* ---- Sparkles ---- */
 if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
