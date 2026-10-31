@@ -137,6 +137,26 @@ strong{color:var(--g-soft);font-weight:600}
   100%{transform:translateY(-110vh) translateX(40px) scale(1.2) rotate(360deg);opacity:0}
 }
 
+/* ---- Wand ----
+   Glow: sits behind the content, shown only after the mouse moves (so never on phones).
+   Trail: above everything, even the envelope; each sparkle drifts by --dx/--dy and fades. */
+.cglow{
+  position:fixed;left:0;top:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;
+  pointer-events:none;z-index:0;opacity:0;transition:opacity .6s ease;will-change:transform;
+  background:radial-gradient(circle,rgba(126,245,202,.1),rgba(86,32,138,.16) 40%,transparent 70%);
+}
+.cglow.on{opacity:1}
+.trail{position:fixed;inset:0;pointer-events:none;z-index:10000;overflow:hidden}
+.trail i{
+  position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
+  background:#fff;box-shadow:0 0 8px 2px var(--p-soft);animation:dust .9s ease-out forwards;
+}
+.trail i.g{box-shadow:0 0 8px 2px var(--g-soft)}
+@keyframes dust{
+  from{opacity:1;transform:scale(1)}
+  to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}
+}
+
 /* ---- Parallax night sky ----
    Each star layer is one screen plus one tile tall; the script slides it up and wraps every tile. */
 .stars{
@@ -383,6 +403,44 @@ footer{
 .tl li::before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--g-soft);box-shadow:0 0 10px var(--g-main)}
 .tl b{display:block;color:var(--g-soft);font-size:.85rem;letter-spacing:.1em}
 .tl span{display:flex;gap:10px;color:#fff;font-size:1.05rem;line-height:1.5;margin-top:4px}
+
+/* ---- Program Flow story ----
+   The script adds .story and sets --p on the section: 0 before the timeline, 1 once it is all read.
+   Without the script (or with reduced motion) the timeline stays as it is above. */
+#timeline::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  /* dusk haze behind the evening, fading to night as the program goes on */
+  background:radial-gradient(ellipse closest-side at 50% 55%,rgba(255,176,214,.16),rgba(216,188,252,.09) 50%,transparent);
+  opacity:calc(1 - var(--p,1));
+}
+.tl{position:relative}
+.tl.story{border-left-color:rgba(126,245,202,.18)}
+.tl.story::before{
+  content:"";position:absolute;left:-2px;top:0;width:2px;height:100%;
+  background:linear-gradient(var(--p-soft),var(--g-soft));
+  transform:scaleY(var(--p,0));transform-origin:top;
+}
+/* the spark at the tip of the line */
+.tl.story::after{
+  content:"";position:absolute;left:-1px;top:calc(var(--p,0) * 100%);width:8px;height:8px;margin:-4px 0 0 -4px;
+  border-radius:50%;background:#fff;box-shadow:0 0 8px 3px var(--g-soft),0 0 24px 8px rgba(31,184,130,.55);
+}
+/* border-box keeps the bordered dot 12px wide, centered on the line (pseudo-elements skip the * rule) */
+.tl.story li::before,.tl.story li.now::after{box-sizing:border-box}
+.tl.story li::before{background:var(--p-mid);border:2px solid rgba(126,245,202,.35);box-shadow:none;transition:all .4s ease}
+.tl.story li.on::before{background:var(--g-soft);border-color:var(--g-soft);box-shadow:0 0 10px var(--g-main)}
+.tl.story li.now::after{
+  content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;
+  border:1px solid var(--g-soft);animation:ring 2s ease-out infinite;
+}
+.tl.story li>*{opacity:.3;transform:translateX(12px);transition:opacity .6s ease,transform .6s ease}
+.tl.story li.on>*{opacity:1;transform:none}
+/* lines of a part come in one after another */
+.tl.story li.on>:nth-child(2){transition-delay:.06s}
+.tl.story li.on>:nth-child(3){transition-delay:.12s}
+.tl.story li.on>:nth-child(4){transition-delay:.18s}
+.tl.story li.on>:nth-child(5){transition-delay:.24s}
+.tl.story li.on>:nth-child(6){transition-delay:.3s}
 
 /* Colors */
 .sw{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:18px 0}

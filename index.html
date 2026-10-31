@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -54,6 +54,10 @@
   <i data-s=".3" style="top:78%;left:15%"></i>
   <i class="g" data-s=".4" style="top:92%;left:80%"></i>
 </div>
+
+<!-- Wand: a soft glow that follows the mouse, and sparkles from the pointer (both run by the script) -->
+<div class="cglow" id="cglow" aria-hidden="true"></div>
+<div class="trail" id="trail" aria-hidden="true"></div>
 
 <header class="top">
   <div class="top-in">
@@ -356,6 +360,46 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
   addEventListener('resize',function(){measure();px()});
   addEventListener('load',function(){measure();px()});
   measure();px()}
+
+/* ---- Program Flow story ----
+   The timeline line fills down to 60% of the screen as the guest scrolls,
+   and each part of the evening lights up once the line reaches its dot. */
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  var tlSec=document.getElementById('timeline'),tl=tlSec.querySelector('.tl'),steps=[].slice.call(tl.children);
+  tl.classList.add('story');
+  function story(){var a=innerHeight*.6,r=tl.getBoundingClientRect(),last=-1;
+    steps.forEach(function(li,i){if(li.getBoundingClientRect().top+11<a)last=i});
+    tlSec.style.setProperty('--p',Math.min(Math.max((a-r.top)/r.height,0),1).toFixed(4));
+    steps.forEach(function(li,i){li.classList.toggle('on',i<=last);li.classList.toggle('now',i===last)})}
+  var stQ=0;addEventListener('scroll',function(){if(!stQ)stQ=requestAnimationFrame(function(){stQ=0;story()})},{passive:true});
+  addEventListener('resize',story);story()}
+
+/* ---- Wand ----
+   Mouse: a soft glow follows the pointer and leaves a trail of sparkles.
+   Tap or click: a small burst of sparkles (a drag or a scroll does not count). */
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  var trail=document.getElementById('trail');
+  function dust(x,y,g,dx,dy){if(trail.childElementCount>40)return;
+    var s=document.createElement('i');if(g)s.className='g';
+    s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--dx',dx+'px');s.style.setProperty('--dy',dy+'px');
+    s.addEventListener('animationend',function(){s.remove()});trail.appendChild(s)}
+  var pd=null;
+  addEventListener('pointerdown',function(e){pd=(e.isPrimary&&e.button===0)?[e.clientX,e.clientY]:null},{passive:true});
+  addEventListener('pointercancel',function(){pd=null});
+  addEventListener('pointerup',function(e){if(!pd||Math.abs(e.clientX-pd[0])+Math.abs(e.clientY-pd[1])>10)return;pd=null;
+    for(var k=0;k<10;k++){var ang=k/10*Math.PI*2,r=26+Math.random()*22;
+      dust(e.clientX,e.clientY,k%2,Math.cos(ang)*r,Math.sin(ang)*r)}});
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+    var cg=document.getElementById('cglow'),mx=0,my=0,cx=0,cy=0,cgQ=0,lx=-99,ly=-99,dn=0;
+    /* the glow eases toward the pointer, and stops redrawing once it catches up */
+    function follow(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;cg.style.transform='translate3d('+cx+'px,'+cy+'px,0)';
+      cgQ=(Math.abs(mx-cx)+Math.abs(my-cy)>.5)?requestAnimationFrame(follow):0}
+    addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;
+      if(!cg.classList.contains('on')){cx=mx;cy=my;cg.classList.add('on')}
+      if(!cgQ)cgQ=requestAnimationFrame(follow);
+      if(lb.hidden&&Math.abs(mx-lx)+Math.abs(my-ly)>18){lx=mx;ly=my;
+        dust(mx,my,dn++%3==0,Math.random()*12-6,10+Math.random()*14)}},{passive:true});
+    document.addEventListener('mouseleave',function(){cg.classList.remove('on')})}}
 </script>
 </body>
 </html>                
