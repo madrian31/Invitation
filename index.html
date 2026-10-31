@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -43,6 +43,18 @@
 
 <div class="sparkles" id="sparkles" aria-hidden="true"></div>
 
+<!-- Parallax: star layers and soft glows that drift at different speeds -->
+<div class="stars far" aria-hidden="true"></div>
+<div class="stars near" aria-hidden="true"></div>
+<div class="glow" aria-hidden="true">
+  <i data-s=".4" style="top:8%;left:12%"></i>
+  <i class="g" data-s=".3" style="top:24%;left:88%"></i>
+  <i data-s=".45" style="top:42%;left:10%"></i>
+  <i class="g" data-s=".35" style="top:60%;left:90%"></i>
+  <i data-s=".3" style="top:78%;left:15%"></i>
+  <i class="g" data-s=".4" style="top:92%;left:80%"></i>
+</div>
+
 <header class="top">
   <div class="top-in">
     <a class="brand" href="#top" aria-label="Mariane's 18th birthday, back to top">
@@ -60,7 +72,7 @@
 
 <!-- 2. Title at Hero Image -->
 <div class="hero" id="top">
-  <p class="eyebrow">&#10022; An Enchanted Evening &#10022;</p>
+  <p class="eyebrow">&#9679; An Enchanted Evening &#9679;</p>
   <h1>Celebrate Mariane Angeline's 18th</h1>
   <img src="images/web/1.jpg" width="1200" height="1500" alt="Happy 18th Birthday Mariane Angeline Bernales" fetchpriority="high">
   <div class="actions"><a class="btn" href="#rsvp">RSVP Now</a></div>
@@ -82,7 +94,7 @@
 
 <!-- 3. The Venue Section -->
 <section id="venue-section">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>The Venue</h2>
   <p>The celebration will be held at the beautiful <strong>Hardin de Asis</strong>, our serene haven, private resort, and events place.</p>
   <p>Ample parking is available. Come for the celebration, stay for the memories! It's sure to be a night filled with laughter, love, and unforgettable moments. Don't miss out!</p>
@@ -93,7 +105,7 @@
 
 <!-- 4. Court of Honor Section -->
 <section id="court">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>The Court of Honor</h2>
   <p>The special people who will be part of this milestone night. <strong>Tap a card</strong> to view the full list, then swipe for the next one.</p>
   <div class="gal">
@@ -107,7 +119,7 @@
 
 <!-- 5. gallery (Debut Pictures Section) -->
 <section id="gallery">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>Gallery</h2>
   <p>A collection of cherished memories and debut portraits of Mariane Angeline.</p>
   <div class="debut-gal">
@@ -125,7 +137,7 @@
 
 <!-- Program Flow -->
 <section id="timeline">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>Program Flow</h2>
   <p>How our enchanted evening will unfold, from <strong>4:00 PM to 9:00 PM</strong>.</p>
   <ol class="tl">
@@ -154,7 +166,7 @@
 
 <!-- Attire -->
 <section id="attire">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>Attire &amp; Colors</h2>
   <div class="grid">
     <div class="card"><small>Ladies</small><p>Dress or skirt ensemble, with heels or elegant sandals.</p></div>
@@ -172,7 +184,7 @@
 
 <!-- FAQ -->
 <section id="faq">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>FAQ</h2>
   <div class="faq">
     <details><summary>When and where is the debut?</summary><p>November 28, 2026 at 4:00 PM, at Hardin de Asis, Muzon Road, Barangay Asis I, Mendez.</p></details>
@@ -187,7 +199,7 @@
 
 <!-- 6. RSVP Section -->
 <section id="rsvp">
-  <div class="divider"><span>&#10022;</span></div>
+  <div class="divider"><span>&#9679;</span></div>
   <h2>RSVP</h2>
   <p>Please grace us with your response by confirming your attendance on or before <strong>[RSVP deadline]</strong>.</p>
   <div class="actions">
@@ -325,6 +337,25 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
     s.style.left=Math.random()*100+'%';s.style.animationDelay=(Math.random()*12)+'s';
     s.style.animationDuration=(7+Math.random()*9)+'s';s.style.setProperty('--sz',(2+Math.random()*5)+'px');
     if(i%3==0)s.className='g';sp.appendChild(s)}}
+
+/* ---- Parallax ----
+   Star layers wrap every tile height, so they never run out while scrolling.
+   Each glow sits still when its center passes the middle of the screen, and drifts slower than the page around it. */
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  var far=document.querySelector('.stars.far'),near=document.querySelector('.stars.near'),
+      glows=[].slice.call(document.querySelectorAll('.glow i')),gy=[],
+      heroTx=[].slice.call(document.querySelectorAll('.hero .eyebrow,.hero h1'));
+  function measure(){gy=glows.map(function(g){g.style.transform='';var r=g.getBoundingClientRect();return r.top+scrollY+r.height/2})}
+  function px(){var y=scrollY,h=innerHeight;
+    far.style.transform='translate3d(0,'+(-(y*.08%260))+'px,0)';
+    near.style.transform='translate3d(0,'+(-(y*.22%420))+'px,0)';
+    glows.forEach(function(g,i){g.style.transform='translate3d(0,'+((y+h/2-gy[i])*g.dataset.s)+'px,0)'});
+    if(y<h){var k=Math.min(y/(h*.4),1);heroTx.forEach(function(el){
+      el.style.transform='translate3d(0,'+(y*.25)+'px,0)';el.style.opacity=1-k})}}
+  var pxQ=0;addEventListener('scroll',function(){if(!pxQ)pxQ=requestAnimationFrame(function(){pxQ=0;px()})},{passive:true});
+  addEventListener('resize',function(){measure();px()});
+  addEventListener('load',function(){measure();px()});
+  measure();px()}
 </script>
 </body>
-</html>
+</html>                

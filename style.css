@@ -137,6 +137,34 @@ strong{color:var(--g-soft);font-weight:600}
   100%{transform:translateY(-110vh) translateX(40px) scale(1.2) rotate(360deg);opacity:0}
 }
 
+/* ---- Parallax night sky ----
+   Each star layer is one screen plus one tile tall; the script slides it up and wraps every tile. */
+.stars{
+  position:fixed;left:0;right:0;top:0;height:calc(100vh + var(--t));pointer-events:none;z-index:0;
+  background-size:var(--t) var(--t);will-change:transform;
+}
+.stars.far{--t:260px;opacity:.55;background-image:
+  radial-gradient(1.2px 1.2px at 24px 36px,#fff,transparent),
+  radial-gradient(1px 1px at 140px 80px,var(--p-soft),transparent),
+  radial-gradient(1.5px 1.5px at 210px 170px,#fff,transparent),
+  radial-gradient(1px 1px at 70px 200px,var(--g-soft),transparent),
+  radial-gradient(1.2px 1.2px at 180px 240px,#fff,transparent),
+  radial-gradient(1px 1px at 110px 130px,#fff,transparent)}
+.stars.near{--t:420px;opacity:.8;background-image:
+  radial-gradient(2px 2px at 60px 90px,#fff,transparent),
+  radial-gradient(1.6px 1.6px at 330px 40px,var(--g-soft),transparent),
+  radial-gradient(2px 2px at 260px 300px,var(--p-soft),transparent),
+  radial-gradient(1.6px 1.6px at 120px 370px,#fff,transparent)}
+
+/* Soft glows spread down the whole page (body is their positioning box) */
+body{position:relative}
+.glow{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.glow i{
+  position:absolute;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;will-change:transform;
+  background:radial-gradient(circle,rgba(86,32,138,.5),transparent 65%);
+}
+.glow i.g{background:radial-gradient(circle,rgba(31,184,130,.22),transparent 65%)}
+
 /* Glassmorphism Sticky Header */
 .top{
   position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
