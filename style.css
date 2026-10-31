@@ -391,6 +391,13 @@ footer{
 }
 .credit{display:block;margin-top:10px;font-size:.75rem;opacity:.7}
 
+/* ---- Scroll reveal ----
+   The script marks elements .rv, then adds .in when they scroll into view (--d staggers them).
+   An animation, not a transition, so the cards' and photos' own hover effects keep working after. */
+.rv:not(.in){opacity:0}
+.rv.in{animation:reveal 1.5s cubic-bezier(.25,.6,.3,1) var(--d,0s) backwards}
+@keyframes reveal{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+
 @media (prefers-reduced-motion:reduce){
   .sparkles{display:none}html{scroll-behavior:auto}
   .gal button,.debut-gal button,.btn,.card,.hero img{transition:none;transform:none!important}

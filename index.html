@@ -374,6 +374,18 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
   var stQ=0;addEventListener('scroll',function(){if(!stQ)stQ=requestAnimationFrame(function(){stQ=0;story()})},{passive:true});
   addEventListener('resize',story);story()}
 
+/* ---- Scroll reveal ----
+   Text and photos rise and fade in the first time they scroll into view, and stay.
+   The ones that arrive together come in one after another.
+   Program Flow's list is left out: it lights up on its own. */
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches&&'IntersectionObserver' in window){
+  var rvIo=new IntersectionObserver(function(es){var k=0;
+    es.forEach(function(e){if(!e.isIntersecting)return;
+      e.target.style.setProperty('--d',Math.min(k++*.18,.9)+'s');e.target.classList.add('in');rvIo.unobserve(e.target)})},
+    {rootMargin:'0px 0px -8% 0px'});
+  [].forEach.call(document.querySelectorAll('main section>:not(.grid):not(.gal):not(.debut-gal):not(.faq):not(.sw):not(.tl),'+
+    '.grid>*,.gal>*,.debut-gal>*,.faq>*,.sw>*,footer'),function(el){el.classList.add('rv');rvIo.observe(el)})}
+
 /* ---- Wand ----
    Mouse: a soft glow follows the pointer and leaves a trail of sparkles.
    Tap or click: a small burst of sparkles (a drag or a scroll does not count). */
