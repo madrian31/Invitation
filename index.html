@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -408,20 +408,27 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
 /* ---- Scroll reveal ----
    Text and photos rise and fade in as they scroll into view.
    The ones that arrive together come in one after another.
-   Scrolling back up, each one is reset once it is 80px below the screen, so it comes in again on the way down.
-   (Not at the screen's edge: a reveal starts up to ~60px lower, which would count as leaving and loop.)
-   Leaving through the top changes nothing: it is out of sight already.
+   Scrolling back up, each one sinks and fades once its top drops below 85% of the screen,
+   and comes in again on the way down (at 92%). Leaving through the top changes nothing: it is out of sight already.
+   Positions come from the layout (offsetTop), not from the screen: a reveal moves things down up to ~60px
+   as it starts, and measuring that would hide what was just shown, over and over.
    Program Flow's list is left out: it lights up on its own. */
-if(!matchMedia('(prefers-reduced-motion:reduce)').matches&&'IntersectionObserver' in window){
-  var rvIo=new IntersectionObserver(function(es){var k=0;
-    es.forEach(function(e){var c=e.target.classList;if(!e.isIntersecting||c.contains('in'))return;
-      e.target.style.setProperty('--d',Math.min(k++*.18,.9)+'s');c.add('in')})},
-    {rootMargin:'0px 0px -8% 0px'});
-  var rvOut=new IntersectionObserver(function(es){
-    es.forEach(function(e){if(!e.isIntersecting&&e.boundingClientRect.top>0)e.target.classList.remove('in')})},
-    {rootMargin:'0px 0px 80px 0px'});
-  [].forEach.call(document.querySelectorAll('main section>:not(.grid):not(.gal):not(.debut-gal):not(.faq):not(.sw):not(.tl),'+
-    '.grid>*,.gal>*,.debut-gal>*,.faq>*,.sw>*,footer'),function(el){el.classList.add('rv');rvIo.observe(el);rvOut.observe(el)})}
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  var rvs=[].slice.call(document.querySelectorAll('main section>:not(.grid):not(.gal):not(.debut-gal):not(.faq):not(.sw):not(.tl),'+
+        '.grid>*,.gal>*,.debut-gal>*,.faq>*,.sw>*,footer')),rvT=[],rvH=[],rvY=scrollY;
+  rvs.forEach(function(el){el.classList.add('rv')});
+  function rvMeasure(){var b=document.body.getBoundingClientRect().top+scrollY;
+    rvs.forEach(function(el,i){var t=b;for(var p=el;p&&p!==document.body;p=p.offsetParent)t+=p.offsetTop;rvT[i]=t;rvH[i]=el.offsetHeight})}
+  /* the bottom-of-page check keeps a phone's bounce at the end from counting as scrolling up */
+  function reveal(){var y=scrollY,h=innerHeight,up=y<rvY&&y+h<document.documentElement.scrollHeight-2,line=h*(up?.85:.92),k=0;rvY=y;
+    rvs.forEach(function(el,i){var t=rvT[i]-y,c=el.classList,on=c.contains('in');
+      if(!on&&t<line&&t+rvH[i]>0){el.style.setProperty('--d',Math.min(k++*.18,.9)+'s');c.remove('out');c.add('in')}
+      else if(on&&up&&t>line){c.remove('in');c.add('out')}})}
+  var rvQ=0;addEventListener('scroll',function(){if(!rvQ)rvQ=requestAnimationFrame(function(){rvQ=0;reveal()})},{passive:true});
+  addEventListener('resize',function(){rvMeasure();reveal()});
+  addEventListener('load',function(){rvMeasure();reveal()});
+  document.addEventListener('toggle',function(){rvMeasure();reveal()},true);
+  rvMeasure();reveal()}
 
 /* ---- Wand ----
    Mouse: a soft glow follows the pointer and leaves a trail of sparkles.
