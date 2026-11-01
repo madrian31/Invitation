@@ -121,6 +121,11 @@ strong{color:var(--g-soft);font-weight:600}
 .envelope-wrapper.open .letter{
   transform:translateY(-65%);z-index:5;transition-delay:.35s;
 }
+/* Closing: the envelope swells and blurs past the guest as the overlay fades */
+@media (prefers-reduced-motion:no-preference){
+  .envelope-wrapper{transition:transform .9s cubic-bezier(.55,0,.8,.4),filter .9s ease}
+  .envelope-overlay.hidden .envelope-wrapper{transform:scale(1.3);filter:blur(6px)}
+}
 
 /* Enhanced magical floating sparkles */
 .sparkles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -158,9 +163,10 @@ strong{color:var(--g-soft);font-weight:600}
 }
 
 /* ---- Parallax night sky ----
-   Each star layer is one screen plus one tile tall; the script slides it up and wraps every tile. */
+   Each star layer is one screen plus one tile tall; the script slides it up and wraps every tile.
+   The extra 40px above and below leaves room for the mouse lean, so an edge never shows. */
 .stars{
-  position:fixed;left:0;right:0;top:0;height:calc(100vh + var(--t));pointer-events:none;z-index:0;
+  position:fixed;left:0;right:0;top:-40px;height:calc(100vh + var(--t) + 80px);pointer-events:none;z-index:0;
   background-size:var(--t) var(--t);will-change:transform;
 }
 .stars.far{--t:260px;opacity:.55;background-image:
@@ -249,7 +255,7 @@ body{position:relative}
 section{max-width:760px;margin:0 auto;padding:50px 20px}
 
 .eyebrow{
-  letter-spacing:.25em;font-size:.85rem;color:var(--g-soft);text-transform:uppercase;margin:24px 0 8px;
+  letter-spacing:.25em;font-size:.85rem;color:var(--g-soft);text-transform:uppercase;margin:24px auto 8px;
   text-shadow:0 0 10px rgba(126,245,202,.4);
 }
 
@@ -305,11 +311,14 @@ p{color:var(--mut);line-height:1.8;margin:.5rem auto;max-width:56ch;font-size:1.
 .gal,.debut-gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:28px}
 .gal button,.debut-gal button{
   all:unset;cursor:pointer;border-radius:18px;overflow:hidden;
-  border:1px solid rgba(216,188,252,.3);transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
-  background:rgba(18,4,30,.6);box-shadow:0 8px 20px rgba(0,0,0,.3);
+  border:1px solid rgba(216,188,252,.3);background:rgba(18,4,30,.6);box-shadow:0 8px 20px rgba(0,0,0,.3);
+  /* not "all": a transition on opacity would cut across the scroll reveal */
+  transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),outline-color .3s ease;
 }
 .gal button img,.debut-gal button img{width:100%;height:auto;transition:transform .4s ease}
 .debut-gal button img{height:200px;object-fit:cover;object-position:top}
+/* Parallax inside the frame: the script adds .deep and slides each photo up to 28px within the extra 15% */
+.debut-gal.deep img{scale:1.15;transform-origin:50% 0}
 /* Hover effects only on mouse devices; on phones a tap would leave them stuck on */
 @media (hover:hover){
   .gal button:hover img,.debut-gal button:hover img{transform:scale(1.08)}
@@ -349,6 +358,18 @@ p{color:var(--mut);line-height:1.8;margin:.5rem auto;max-width:56ch;font-size:1.
 #lb figure{margin:0;max-width:min(92vw,720px)}
 #lb img{max-height:80vh;max-height:80dvh;width:auto;margin:0 auto;border-radius:16px;box-shadow:0 0 50px rgba(31,184,130,.4)}
 #lb figcaption{margin-top:14px;color:var(--g-soft);letter-spacing:.1em;font-size:1.1rem;font-weight:600}
+/* Opens with a fade while the photo grows into place; .out plays the close (the script waits for it) */
+@media (prefers-reduced-motion:no-preference){
+  #lb{animation:lb-in .35s ease}
+  #lb figure{animation:lb-zoom .5s cubic-bezier(.25,.6,.3,1)}
+  #lb.out{animation:lb-out .25s ease forwards}
+  #lb.out figure{animation:lb-shrink .25s ease forwards}
+}
+#lb.out{pointer-events:none}
+@keyframes lb-in{from{opacity:0}}
+@keyframes lb-out{to{opacity:0}}
+@keyframes lb-zoom{from{opacity:0;transform:translateY(20px) scale(.88)}}
+@keyframes lb-shrink{to{transform:scale(.94)}}
 .nav{
   all:unset;cursor:pointer;position:absolute;width:52px;height:52px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;font-size:2rem;line-height:1;color:#fff;
@@ -392,11 +413,40 @@ footer{
 .credit{display:block;margin-top:10px;font-size:.75rem;opacity:.7}
 
 /* ---- Scroll reveal ----
-   The script marks elements .rv, then adds .in when they scroll into view (--d staggers them).
+   The script marks elements .rv, then adds .in when they scroll into view (--d staggers them),
+   and takes it off once they are below the screen, so they can come in again.
    An animation, not a transition, so the cards' and photos' own hover effects keep working after. */
 .rv:not(.in){opacity:0}
 .rv.in{animation:reveal 1.5s cubic-bezier(.25,.6,.3,1) var(--d,0s) backwards}
 @keyframes reveal{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+
+/* Each kind of thing arrives its own way: headings come into focus, cards stand up,
+   photos rise while the picture settles in its frame, color dots pop,
+   and divider lines draw out from the middle. */
+h2.rv.in{animation-name:reveal-focus}
+.grid>.rv.in{animation-name:reveal-stand;transform-origin:50% 100%}
+.gal>.rv.in,.debut-gal>.rv.in{animation-name:reveal-photo}
+.gal>.rv.in img,.debut-gal>.rv.in img{animation:settle 1.8s cubic-bezier(.25,.6,.3,1) var(--d,0s) backwards}
+.sw>.rv.in{animation:pop .8s cubic-bezier(.3,1.5,.5,1) var(--d,0s) backwards}
+.divider::before{transform-origin:right}
+.divider::after{transform-origin:left}
+.divider.rv.in::before,.divider.rv.in::after{animation:draw 1.6s cubic-bezier(.25,.6,.3,1) var(--d,0s) backwards}
+.divider.rv.in span{animation:pop .9s cubic-bezier(.3,1.5,.5,1) calc(var(--d,0s) + .3s) backwards}
+@keyframes reveal-focus{from{opacity:0;filter:blur(12px);transform:translateY(24px) scale(.94)}to{opacity:1;filter:none;transform:none}}
+@keyframes reveal-stand{from{opacity:0;transform:perspective(900px) rotateX(35deg) translateY(30px)}to{opacity:1;transform:none}}
+@keyframes reveal-photo{from{opacity:0;transform:translateY(50px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes settle{from{transform:scale(1.35)}to{transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.2)}60%{opacity:1;transform:scale(1.15)}to{opacity:1;transform:none}}
+@keyframes draw{from{transform:scaleX(0)}to{transform:none}}
+
+/* ---- Hero entrance ----
+   The script adds .enter as the envelope fades away: the lines and the photo arrive one after another. */
+.hero.enter>*{animation:reveal 1.6s cubic-bezier(.25,.6,.3,1) backwards}
+.hero.enter .eyebrow{animation-delay:.2s}
+.hero.enter h1{animation-name:reveal-focus;animation-delay:.35s}
+.hero.enter img{animation-name:hero-in;animation-duration:2s;animation-delay:.5s}
+.hero.enter .actions{animation-delay:1s}
+@keyframes hero-in{from{opacity:0;transform:scale(1.06);filter:brightness(1.8) blur(8px)}to{opacity:1;transform:none;filter:none}}
 
 @media (prefers-reduced-motion:reduce){
   .sparkles{display:none}html{scroll-behavior:auto}
@@ -459,6 +509,10 @@ footer{
 .faq summary{cursor:pointer;font-weight:600;color:#fff}
 .faq details[open] summary{color:var(--g-soft)}
 .faq p{margin:.6rem 0 0;font-size:.95rem}
+@media (prefers-reduced-motion:no-preference){
+  .faq details[open] p{animation:drop .5s cubic-bezier(.25,.6,.3,1)}
+}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}}
 
 /* Court list images: show full list in lightbox */
 #lb img{object-fit:contain;max-width:100%}
