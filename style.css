@@ -516,6 +516,33 @@ h2.rv.in{animation-name:reveal-focus}
 }
 @keyframes drop{from{opacity:0;transform:translateY(-8px)}}
 
+/* RSVP form
+   Inputs are 1rem (16px) so iPhones don't zoom in when a field is tapped. */
+.rsvp{max-width:440px;margin:28px auto 0;text-align:left;display:grid;gap:18px;color-scheme:dark}
+.rsvp fieldset{border:0;margin:0;padding:0;min-width:0}
+.rsvp>label,.rsvp legend{display:block;padding:0;font-size:.78rem;letter-spacing:.16em;color:var(--g-soft);text-transform:uppercase;font-weight:600}
+.rsvp input[type=text]{
+  display:block;width:100%;margin-top:8px;padding:13px 16px;border-radius:14px;
+  background-color:rgba(18,4,30,.6);border:1px solid rgba(216,188,252,.3);color:#fff;
+  font:400 1rem Montserrat,system-ui,sans-serif;letter-spacing:normal;text-transform:none;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.rsvp input[type=text]::placeholder{color:rgba(230,213,247,.45)}
+.rsvp input[type=text]:focus{outline:none;border-color:var(--g-soft);box-shadow:0 0 0 3px rgba(31,184,130,.25)}
+/* Yes / No: two buttons that read as one choice (the radios themselves are hidden but still keyboard-reachable) */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg span{
+  display:block;height:100%;text-align:center;padding:13px 8px;border-radius:14px;cursor:pointer;
+  border:1px solid rgba(216,188,252,.3);background:rgba(18,4,30,.6);color:var(--mut);font-size:.92rem;
+  transition:all .2s ease;
+}
+.seg input:checked+span{color:#fff;font-weight:600;border-color:var(--g-soft);background:rgba(31,184,130,.22);box-shadow:0 0 18px rgba(31,184,130,.25)}
+.seg input:focus-visible+span{outline:2px solid var(--g-soft);outline-offset:3px}
+.rsvp .actions{margin-top:6px}
+.rsvp-note{margin:0;font-size:.88rem;line-height:1.6;text-align:center}
+
 /* Court list images: show full list in lightbox */
 #lb img{object-fit:contain;max-width:100%}
 

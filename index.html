@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -207,10 +207,24 @@
   <div class="divider"><span>&#9679;</span></div>
   <h2>RSVP</h2>
   <p>Please grace us with your response by confirming your attendance on or before <strong>[RSVP deadline]</strong>.</p>
-  <div class="actions">
-    <a class="btn" href="tel:+639083479915">&#128222; Call 0908 347 9915</a>
-    <a class="btn ghost" href="sms:+639083479915?body=Hi!%20I%20will%20gladly%20attend%20Mariane%27s%2018th%20birthday.">&#128172; Send a text</a>
-  </div>
+  <!-- The form only writes the text message; the guest still sends it from their own phone (see "RSVP by text" in the script) -->
+  <form class="rsvp" id="rsvp-form">
+    <label>Your name
+      <input type="text" name="guest" autocomplete="name" required placeholder="e.g. Juan Dela Cruz">
+    </label>
+    <fieldset>
+      <legend>Will you attend?</legend>
+      <div class="seg">
+        <label><input type="radio" name="go" value="yes" checked><span>Yes, I'll be there</span></label>
+        <label><input type="radio" name="go" value="no"><span>Sorry, I can't</span></label>
+      </div>
+    </fieldset>
+    <div class="actions">
+      <button class="btn" type="submit">&#128140; Confirm my attendance</button>
+      <a class="btn ghost" href="tel:+639083479915">&#128222; Call 0908 347 9915</a>
+    </div>
+    <p class="rsvp-note" id="rsvp-note" aria-live="polite" hidden></p>
+  </form>
 </section>
 </main>
 
@@ -334,6 +348,21 @@ document.getElementById('ics').onclick=function(){
    'DESCRIPTION:Please arrive on time.','END:VEVENT','END:VCALENDAR'].join('\r\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
   a.download='mariane-18th-birthday.ics';document.body.appendChild(a);a.click();a.remove()};
+
+/* ---- RSVP by text ----
+   Writes the message from the form and opens the guest's messaging app with it, addressed to the RSVP number.
+   On a computer the app may not open, so the message is also shown for the guest to send by hand. */
+var rsvp=document.getElementById('rsvp-form'),rsvpNote=document.getElementById('rsvp-note'),RSVP_NO='+639083479915';
+/* any edit hides the last message shown, so it never disagrees with the form */
+rsvp.onchange=rsvp.oninput=function(){rsvpNote.hidden=true};
+rsvp.onsubmit=function(e){e.preventDefault();
+  var name=rsvp.guest.value.trim().replace(/\s+/g,' '),msg;
+  if(!name){rsvp.guest.value='';rsvp.guest.reportValidity();return}
+  if(rsvp.go.value==='no')msg='Hi! This is '+name+'. I\'m sorry, I won\'t be able to attend Mariane\'s 18th birthday on November 28. Happy birthday, Mariane!';
+  else msg='Hi! This is '+name+'. I will gladly attend Mariane\'s 18th birthday on November 28. See you!';
+  rsvpNote.textContent='Opening your messages app… If nothing opens, please text this to 0908 347 9915: “'+msg+'”';
+  rsvpNote.hidden=false;
+  location.href='sms:'+RSVP_NO+'?body='+encodeURIComponent(msg)};
 
 /* ---- Header: highlight current section, shadow after scroll ---- */
 var top_=document.querySelector('.top'),links=[].slice.call(document.querySelectorAll('.top a[href^="#"]'));
